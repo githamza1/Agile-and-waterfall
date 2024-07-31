@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agile Project Management</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+
+    <style>
+        body {
+            background: radial-gradient(circle, #7cb3fc 0%, #cce2fa 50%, #7cb3fc 100%);
+            color: #333;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            font-family: 'Anton SC', serif;
+            font-weight: 1000;
+            color: #1f3f83;
+            font-size: 3rem;
+            text-align: center;
+        }
+        h2 {
+            font-family: 'Anton SC', serif;
+            font-weight: 1000;
+            color: #1f3f83;
+            font-size: 3rem;
+            background-color: transparent;
+        }
+        h4{
+            font-family: 'Anton SC', serif;
+            font-weight: 100;
+            color: #1f3f83;
+            font-size: 2rem;
+            text-align: center;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .card {
+            margin-bottom: 20px;
+            border: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            background-color: #0c5fbe;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .btn-custom {
+            background-color: #0c5fbe;
+            color: white;
+            border: none;
+        }
+        .btn-custom:hover {
+            background-color: #b6b6b6;
+        }
+        .btn-action {
+            background-color: #265283;
+            color: white;
+            border: none;
+        }
+        .btn-action:hover {
+            background-color: #173169;
+            color: white;
+        }
+        .section-header {
+            background-color: transparent;
+            color: white;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        .charts-wrapper {
+            display: flex;
+            gap: 20px; /* Adjust the gap between charts as needed */
+            margin: 20px 0;
+        }
+        .chart-container {
+            flex: 1;
+            min-width: 300px; /* Minimum width for each chart */
+            height: 300px; /* Adjust the height as needed */
+        }
+        .chart-container {
+            display: flex;
+            justify-content: center; /* Center the chart horizontally */
+            margin: 20px 0;
+        }
+        .chart {
+            width: 50%; /* Adjust the width as needed */
+            max-width: 600px; /* Set a max-width to prevent it from becoming too large */
+        }
+        /* General button styling */
+        button {
+        background-color:  #0c5fbe; /* Blue background */
+        color: white;           /* White text */
+        align-self: auto;
+        border: none;           /* Remove border */
+        padding: 10px 20px;     /* Add some padding */
+        margin: 10 30px;         /* Space between buttons */
+        border-radius: 5px;     /* Slightly rounded corners */
+        font-size: 16px;        /* Font size */
+        cursor: pointer;        /* Pointer cursor on hover */
+        transition: background-color 0.3s; /* Smooth background color transition */
+        }
+
+        /* Button hover and active states */
+        button:hover {
+        background-color: #265283; /* Dark blue on hover */
+        color: white;
+        }
+
+        button:active {
+        background-color: #265283; /* Even darker blue on click */
+        color: white;
+        }
+        .buttonWrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px; /* Adjust the space between buttons and their value divs */
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="text-center mb-4">
+            <h1>Agile vs WaterFall Modelling</h1>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                Project Description Cleaning
+            </div>
+            <div class="card-body">
+                <form id="description-form">
+                    <div class="form-group">
+                        <label for="description">Project Description:</label>
+                        <textarea class="form-control" id="description" name="description" rows="5" required></textarea>
+                    </div>
+                    <button type="button" class="btn btn-custom" onclick="submitDescription()">Submit</button>
+                </form>
+                <div id="cleaned-result" class="mt-3"></div>
+            </div>
+        </div>
+
+
+
+
+<!-- ...............................................(NEWWWWWWWW Productivity Graphs)............................................................................................-->
+
+    <button id="generateProductivityButton">Generate Productivity</button>
+    <div id="productivity_values"></div>
+
+
+    <button id="generatePerformanceButton">Generate Performance</button>
+    <div id="performance_values"></div>
+
+    <button id="generateMitigationButton">Generate Risk Mitigation</button>
+    <div id="mitigation_values"></div>
+
+<h1> Productivity Analysis </h1>
+<h4>(Statistical Analysis)</h4>
+<div id="productivity_values"></div>
+<canvas id="productivityChart" width="400" height="200"></canvas>
+<script>
+
+document.getElementById('generateProductivityButton').addEventListener('click', async function() {
+    await submitCleanDescription();
+});
+
+async function submitCleanDescription() 
+{
+    // Get cleaned description from the display element
+    const cleanedDescription = document.getElementById('cleaned-result').innerText;
+    
+    if (!cleanedDescription) {
+        alert('Cleaned description is not available. Please clean the description first.');
+        return;
+    }
+    
+    // Fetch productivity data
+    const response = await fetch('/generate_productivity/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ description: cleanedDescription })
+    });
+
+    const data = await response.json();
+    const content1 = `Agile:\n${data.agile_productivity.join('\n')}\n\nWaterfall:\n${data.waterfall_productivity.join('\n')}`;
+
+    // Display the results
+      //const content1 = "Agile:\n1\n20\n34\n29\n36\n\nWaterfall:\n11\n15\n20\n25\n2";
+
+        const parseProductivity = (content1) => {
+            const sections = content1.split('\n\n');
+            const agileProductivity = sections[0].split('\n').slice(1).map(Number);
+            const waterfallProductivity = sections[1].split('\n').slice(1).map(Number);
+            return { agileProductivity, waterfallProductivity };
+        };
+
+        const { agileProductivity, waterfallProductivity } = parseProductivity(content1);
+
+        const ctx = document.getElementById('productivityChart').getContext('2d');
+        const productivityChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['1', '2', '3', '4', '5'],
+                datasets: [
+                    {
+                        label: 'Agile Productivity',
+                        data: agileProductivity,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        fill: false
+                    },
+                    {
+                        label: 'Waterfall Productivity',
+                        data: waterfallProductivity,
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Iterations'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Productivity'
+                        }
+                    }
+                }
+            }
+        });
+}
+
+</script>
+
+
+<!-- ...............................................(NEWWWWWWWW Performance Graphs)............................................................................................-->
+
+
+
+<h1> Performance Analysis </h1>
+<h4>(Statistical Analysis)</h4>
+<div id="performance_values"></div>
+<canvas id="performanceChart" width="400" height="200"></canvas>
+<script>
+document.getElementById('generatePerformanceButton').addEventListener('click', async function() {
+    await submitCleanDescription1();
+});
+
+async function submitCleanDescription1() 
+{
+    // Get cleaned description from the display element
+    const cleanedDescription = document.getElementById('cleaned-result').innerText;
+    
+    if (!cleanedDescription) {
+        alert('Cleaned description is not available. Please clean the description first.');
+        return;
+    }
+    
+    // Fetch performance data
+    const response = await fetch('/generate_performance/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ description: cleanedDescription })
+    });
+
+    const data = await response.json();
+    const content1 = `Agile:\n${data.agile_performance.join('\n')}\n\nWaterfall:\n${data.waterfall_performance.join('\n')}`;
+
+    // Parse the performance data
+    const parsePerformance = (content1) => {
+        const sections = content1.split('\n\n');
+        const agilePerformance = sections[0].split('\n').slice(1).map(Number);
+        const waterfallPerformance = sections[1].split('\n').slice(1).map(Number);
+        return { agilePerformance, waterfallPerformance };
+    };
+
+    const { agilePerformance, waterfallPerformance } = parsePerformance(content1);
+
+    // Plot the performance data
+    const ctx = document.getElementById('performanceChart').getContext('2d');
+    const performanceChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['1', '2', '3', '4', '5'],
+            datasets: [
+                {
+                    label: 'Agile Performance',
+                    data: agilePerformance,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: false
+                },
+                {
+                    label: 'Waterfall Performance',
+                    data: waterfallPerformance,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Iterations'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Performance'
+                    }
+                }
+            }
+        }
+    });
+}
+</script>
+
+
+<!-- ...............................................(NEWWWWWWWW Risk Mitigation Graphs)............................................................................................-->
+
+
+
+
+<h1> RISK MITIGATION </h1>
+<h4>(Statistical Analysis)</h4>
+<div id="risk_mitigation_values"></div>
+<canvas id="Risk_Mitigation_Chart" width="400" height="200"></canvas>
+<script>
+document.getElementById('generateMitigationButton').addEventListener('click', async function() {
+    await submitCleanDescription2();
+});
+
+async function submitCleanDescription2() 
+{
+    // Get cleaned description from the display element
+    const cleanedDescription = document.getElementById('cleaned-result').innerText;
+    
+    if (!cleanedDescription) {
+        alert('Cleaned description is not available. Please clean the description first.');
+        return;
+    }
+    
+    // Fetch risk mitigation data
+    const response = await fetch('/generate_mitigation/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ description: cleanedDescription })
+    });
+
+    const data = await response.json();
+    const content1 = `Agile:\n${data.agile_mitigation.join('\n')}\n\nWaterfall:\n${data.waterfall_mitigation.join('\n')}`;
+
+    // Parse the risk mitigation data
+    const parseRiskMitigation = (content) => {
+        const sections = content.split('\n\n');
+        const agileMitigation = sections[0].split('\n').slice(1).map(Number);
+        const waterfallMitigation = sections[1].split('\n').slice(1).map(Number);
+        return { agileMitigation, waterfallMitigation };
+    };
+
+    const { agileMitigation, waterfallMitigation } = parseRiskMitigation(content1);
+
+    // Plot the risk mitigation data as a bar graph
+    const ctx = document.getElementById('Risk_Mitigation_Chart').getContext('2d');
+    const RiskMitigationChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['1', '2', '3', '4', '5'],
+            datasets: [
+                {
+                    label: 'Agile Mitigation',
+                    data: agileMitigation,
+                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Waterfall Mitigation',
+                    data: waterfallMitigation,
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Iterations'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Risk Mitigation'
+                    }
+                }
+            }
+        }
+    });
+}
+</script>
+
+
+<!-- ...............................................(RECOMMENDATION)............................................................................................-->
+    
+
+<button id="recommendation-btn" class="btn btn-custom">Get Recommendation</button>
+        <div id="recommendation-section" class="recommendation-section" style="display:none;">
+            <h2>Recommended Model</h2>
+            <p style="font-size: 1.2em; color: red;" id="recommendation-content"></p>
+
+            <script>
+                document.getElementById('recommendation-btn').addEventListener('click', function() {
+                    const description = document.getElementById('cleaned-result').innerText;
+                    fetch(`/recommendation?description=${encodeURIComponent(description)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            document.getElementById('recommendation-content').innerText = data.recommendation;
+                            document.getElementById('recommendation-section').style.display = 'block';
+                        });
+                });
+            </script>
+        </div>
+
+
+<!-- ...........................................................................................................................................-->
+
+
+        <div class="section-header text-center">
+            <h2 >Actions</h2>
+            <h4>( Utilize the action buttons to navigate through a comprehensive, step-by-step comparative analysis of Agile and Waterfall methodologies )</h4>
+        </div>
+        <div class="text-center">
+            <button class="btn btn-custom" onclick="location.href='/design_page'">Design</button>
+            <a href="/prototyping?description={{ cleaned_description }}" class="btn btn-custom">Prototyping</a>
+            <a href="/customer_evaluation?description={{ cleaned_description }}" class="btn btn-custom">Customer Evaluation</a>
+            <a href="/review_and_update?description={{ cleaned_description }}" class="btn btn-custom">Review and Update</a>
+            <a href="/development?description={{ cleaned_description }}" class="btn btn-custom">Development</a>
+            <a href="/testing?description={{ cleaned_description }}" class="btn btn-custom">Testing</a>
+            <a href="/maintenance?description={{ cleaned_description }}" class="btn btn-custom">Maintenance</a>
+
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+
+        async function submitDescription() {
+            const description = document.getElementById('description').value;
+            const response = await fetch('/clean_description/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ description: description })
+            });
+            const data = await response.json();
+            document.getElementById('cleaned-result').innerText = data.cleaned_description;
+        }
+
+        
+        async function submitRisk() {
+            const cleanedDescription = document.getElementById('cleaned-result').innerText;
+            const response = await fetch('/identify_risks/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ description: cleanedDescription })
+            });
+            const data = await response.json();
+            document.getElementById('risk-result').innerHTML = `
+                <h3>Identified Risks:</h3>
+                <pre>${data.risks.join('\n')}</pre>
+                <h3>Risk Assessment:</h3>
+                <pre>${data.assessment}</pre>
+            `;
+        }
+
+        
+
+        
+
+        async function submitMitigation() {
+            const cleanedDescription = document.getElementById('cleaned-result').innerText;
+            const response = await fetch('/mitigate_risks/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ description: cleanedDescription })
+            });
+            const data = await response.json();
+            document.getElementById('mitigation-result').innerHTML = `
+                <h3>Risk Mitigation:</h3>
+                <pre>${data.mitigation}</pre>
+            `;
+        }
+
+        async function submitRiskAnalysis() {
+            const descriptions = document.getElementById('descriptions').value.split('\n');
+            const humanRisks = document.getElementById('human-risks').value.split('\n\n').map(project => project.split('\n'));
+            const response = await fetch('/analyze_risks/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ descriptions: descriptions, human_risks: humanRisks })
+            });
+            const data = await response.json();
+            document.getElementById('risk-analysis-result').innerHTML = `
+                <h3>Precision:</h3>
+                <pre>${data.precision}</pre>
+                <h3>Recall:</h3>
+                <pre>${data.recall}</pre>
+                <h3>Risk Comparison Chart:</h3>
+                <img src="data:image/png;base64,${data.plot_image}" alt="Risk Comparison Chart">
+            `;
+        }
+    </script>
+</body>
+</html>

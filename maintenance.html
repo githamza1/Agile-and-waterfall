@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintenance Stage</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background: radial-gradient(circle, #7cb3fc 0%, #cce2fa 50%, #7cb3fc 100%);
+            color: #333;
+            font-family: Arial, sans-serif;
+        }
+        .content {
+            margin: 20px auto;
+            max-width: auto;
+            text-align: left;
+        }
+        h1 {
+            font-family: 'Arial', sans-serif;
+            font-size: 2.5rem;
+            color: rgb(34, 34, 34);
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: linear-gradient(to right, rgb(8, 93, 219), rgb(147, 161, 223));
+            color: white;
+            border-radius: 8px;
+        }
+        .content {
+            font-family: 'Arial', sans-serif;
+            font-size: 1rem;
+            color: rgb(50, 50, 50);
+            background: rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 800px;
+            margin: 20px auto;
+            overflow: auto;
+            white-space: pre-wrap;
+        }
+        pre {
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            margin: 0;
+            overflow-x: auto;
+            max-width: 100%;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .btn-custom {
+            background-color: #0c5fbe;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        .btn-custom:hover {
+            background-color: #0e4483;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container text-center">
+        <h1>Maintenance Stage</h1>
+        <p class="lead">In Agile, testing is a continuous and integral part of the development process, aimed at ensuring the product meets the required standards 
+            of quality and functionality. Testing begins early in the development cycle and occurs throughout each iteration or sprint. It involves various types 
+            of tests, including unit tests to verify individual components, integration tests to check interactions between components, and system tests to ensure 
+            the product functions as a whole. Additionally, user acceptance testing is performed to validate that the product meets user needs and expectations.
+             Test results are used to identify and address defects or issues, and feedback from testing helps guide ongoing development and improvements. This 
+             iterative approach to testing ensures that quality is maintained and issues are resolved promptly, allowing for a product that aligns closely with
+              project goals and user requirements.</p>
+    </div>
+    <h1>{{ stage }} Process Description</h1>
+    <div class="content">
+        <pre>{{ content }}</pre>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

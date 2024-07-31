@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Stage</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background: radial-gradient(circle, #7cb3fc 0%, #cce2fa 50%, #7cb3fc 100%);
+            color: #333;
+            font-family: Arial, sans-serif;
+        }
+        .content {
+            margin: 20px auto;
+            max-width: auto;
+            text-align: left;
+        }
+        h1 {
+            font-family: 'Arial', sans-serif;
+            font-size: 2.5rem;
+            color: rgb(34, 34, 34);
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: linear-gradient(to right, rgb(8, 93, 219), rgb(147, 161, 223));
+            color: white;
+            border-radius: 8px;
+        }
+        .content {
+            font-family: 'Arial', sans-serif;
+            font-size: 1rem;
+            color: rgb(50, 50, 50);
+            background: rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 800px;
+            margin: 20px auto;
+            overflow: auto;
+            white-space: pre-wrap;
+        }
+        pre {
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            margin: 0;
+            overflow-x: auto;
+            max-width: 100%;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .btn-custom {
+            background-color: #0c5fbe;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        .btn-custom:hover {
+            background-color: #0e4483;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container text-center">
+        <h1>Design Stage</h1>
+        <p class="lead">The design stage is centered on creating a clear blueprint for the product based on user requirements and business objectives. This involves defining user stories, which break down features into smaller, manageable tasks that can be prioritized and developed. Wireframes and prototypes are created to visualize the product's interface and functionality, allowing for feedback and refinement of requirements. Additionally, planning the architecture is crucial to establish the technical structure and components needed to support the product. The design process is iterative, with regular reviews and adjustments to ensure alignment with evolving user needs and business goals.</p>
+        <button id="generateDesignButton" class="btn btn-custom">Generate Design</button>
+        <a href="/prototyping?description={{ cleaned_description }}" class="btn btn-custom">Next stage : Prototyping</a>
+    </div>
+    <h1>{{ stage }} Process Description</h1>
+    <div class="content">
+        <pre id="design_content">{{ content }}</pre>
+    </div>
+
+    <!-- Hidden input for storing project description -->
+    <input type="hidden" id="description" value="Your initial project description here">
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.getElementById('generateDesignButton').addEventListener('click', async function() {
+            await generateDesign();
+        });
+
+        async function generateDesign() {
+            const description = document.getElementById('description').value;
+
+            // Clean the description
+            const cleanResponse = await fetch('/clean_description/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ description: description })
+            });
+            const cleanData = await cleanResponse.json();
+            const cleanedDescription = cleanData.cleaned_description;
+
+            // Use the cleaned description to get the design content
+            const designResponse = await fetch('/generate_design/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ description: cleanedDescription })
+            });
+            const designData = await designResponse.json();
+            document.getElementById('design_content').innerText = designData.content;
+        }
+    </script>
+</body>
+</html>
